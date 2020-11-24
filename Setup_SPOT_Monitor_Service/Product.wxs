@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="SPOT_Monitor_Service.Setup" Language="1033" Version="1.0.0.0" Manufacturer="MW" UpgradeCode="21127307-1bf2-4857-95ef-48c510e27680">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes"/>
+
+    <Feature Id="ProductFeature" Title="SPOT_Monitor_Service" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+        <Directory Id="ManufacturerFolder" Name="!(bind.property.Manufacturer)">
+          <Directory Id="INSTALLFOLDER" Name="SPOT_Monitor_Service.Setup" />
+        </Directory>        
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">			
+			<Component Id="ProductComponent">
+        <File 
+          Id="SPOT_Monitor_ServiceEXE" 
+          Name="SPOT_Monitor_Service.exe" 
+          DiskId="1"
+          Source="$(var.SPOT_Monitor_Service.TargetPath)" 
+          Vital="yes" 
+          KeyPath="yes" />     
+        
+        <ServiceInstall 
+          Id="ServiceInstaller" 
+          Type="ownProcess" 
+          Vital="yes"
+					Name="SPOTMonitorService" 
+          DisplayName="SPOTMonitorService"
+					Description="SPOT-Monitoring Dienst" 
+          Start="auto"
+          Account="LocalSystem"					          
+          ErrorControl="normal"
+          Arguments=" /start SPOTMonitorService" 
+          Interactive="no" />
+          <!--Account="rah\DPNITServiceSPOT" 
+              Password ="E%RqPm1l3gs':P%F" -->
+        
+				<ServiceControl 
+          Id="StartService"  
+          Stop="both" 
+          Start="install" 
+          Remove="uninstall"
+					Name="SPOTMonitorService" 
+          Wait="yes" />
+        
+			  </Component>
+		</ComponentGroup>
+	</Fragment>	
+</Wix>
